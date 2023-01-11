@@ -2971,6 +2971,8 @@ int id percent 0x7f080149
 int id pin 0x7f08014a
 int id position 0x7f08014b
 int id postLayout 0x7f08014c
+int id power_off 0x7f0801dc
+int id power_on 0x7f0801dd
 int id pressed 0x7f08014d
 int id progress_circular 0x7f08014e
 int id progress_horizontal 0x7f08014f
@@ -3969,7 +3971,7 @@ int style Theme_Design_Light 0x7f1001fd
 int style Theme_Design_Light_BottomSheetDialog 0x7f1001fe
 int style Theme_Design_Light_NoActionBar 0x7f1001ff
 int style Theme_Design_NoActionBar 0x7f100200
-int style Theme_JVCBeamerControl 0x7f100201
+int style Theme_JavaBeamerTest 0x7f10041b
 int style Theme_Material3_Dark 0x7f100202
 int style Theme_Material3_Dark_BottomSheetDialog 0x7f100203
 int style Theme_Material3_Dark_Dialog 0x7f100204

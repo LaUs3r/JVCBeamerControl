@@ -9,10 +9,12 @@ color teal_700
 color white
 drawable ic_launcher_background
 drawable ic_launcher_foreground
+id power_off
+id power_on
 layout activity_main
 mipmap ic_launcher
 mipmap ic_launcher_round
 string app_name
-style Theme.JVCBeamerControl
+style Theme.JavaBeamerTest
 xml backup_rules
 xml data_extraction_rules

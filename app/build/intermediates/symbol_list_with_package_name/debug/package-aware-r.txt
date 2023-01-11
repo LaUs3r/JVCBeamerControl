@@ -2972,6 +2972,8 @@ id percent
 id pin
 id position
 id postLayout
+id power_off
+id power_on
 id pressed
 id progress_circular
 id progress_horizontal
@@ -3970,7 +3972,7 @@ style Theme_Design_Light
 style Theme_Design_Light_BottomSheetDialog
 style Theme_Design_Light_NoActionBar
 style Theme_Design_NoActionBar
-style Theme_JVCBeamerControl
+style Theme_JavaBeamerTest
 style Theme_Material3_Dark
 style Theme_Material3_Dark_BottomSheetDialog
 style Theme_Material3_Dark_Dialog
