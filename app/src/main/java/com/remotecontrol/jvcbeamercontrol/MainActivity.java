@@ -40,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
         //new Thread(new ClientThread()).start();
     }
 
+    public boolean checkConnection(View view) {
+        boolean isConnected = false;
+
+        return isConnected;
+    }
+
     public void power_off(View view) throws IOException {
         Button button = (Button) findViewById(R.id.power_on);
         System.out.println("power_off");
