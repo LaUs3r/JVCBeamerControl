@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import com.remotecontrol.jvcbeamercontrol.BinAscii;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String SERVER_IP = "192.168.100.5";
     private InputStream beamerInputStream;
     private OutputStream beamerOutputStream;
+    private boolean bIsConnectable;
+    private static final byte[] PJREQ = new byte[]  { 80, 74, 82, 69, 81 };
+    private static final byte[] STANDBY = { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x0a };
+    final protected static String SUCCESSFULL_CONNECTION_REPLY = "06890100000A";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +45,72 @@ public class MainActivity extends AppCompatActivity {
         //new Thread(new ClientThread()).start();
     }
 
-    public boolean checkConnection(View view) {
-        boolean isConnected = false;
+    public boolean checkConnection() {
+        // Try to connect to the beamer
+        try {
+            Socket socket = new Socket(SERVER_IP, SERVERPORT);
+            beamerInputStream = socket.getInputStream();
 
-        return isConnected;
+            byte[] inputBuffer = new byte[5];
+            try {
+                beamerInputStream.read(inputBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // Wait for the PJ_OK packet (in decimal 80 74 95 79 75)
+            String response = new String(inputBuffer);
+            System.out.println("checkConnection: " + response);
+            if (response.equals("PJ_OK")) {
+                System.out.println("checkConnection: PJ_OK received");
+                //Send response PJREQ (in decimal 80 74 82 69 81)
+                beamerOutputStream = socket.getOutputStream();
+                beamerOutputStream.write(PJREQ);
+
+                // Wait for PJACK packet
+                beamerInputStream.read(inputBuffer);
+                response = new String(inputBuffer);
+                if (response.equals("PJACK")) {
+                    System.out.println("PJACK received");
+                    beamerOutputStream.write(STANDBY);
+
+                    /*
+                     * Check connection in standby.
+                     * For the expected reply the receive buffer needs to be increased to 6
+                     */
+                    inputBuffer = new byte[6];
+                    beamerInputStream.read(inputBuffer);
+                    if (BinAscii.hexlify(inputBuffer).equals(SUCCESSFULL_CONNECTION_REPLY)) {
+                        bIsConnectable = true;
+                    } else {
+                        bIsConnectable = false;
+                    }
+                } else {
+                    bIsConnectable = false;
+                }
+            } else {
+                // PJ_OK not received
+                System.out.println("checkConnection: ERROR! PJ_OK not received!");
+                bIsConnectable = false;
+            }
+        } catch (UnknownHostException e) {
+            bIsConnectable = false;
+            e.printStackTrace();
+        } catch (IOException e) {
+            bIsConnectable = false;
+            e.printStackTrace();
+        } catch (Exception e) {
+            bIsConnectable = false;
+            e.printStackTrace();
+        }
+        return bIsConnectable;
     }
 
     public void power_off(View view) throws IOException {
-        Button button = (Button) findViewById(R.id.power_on);
+        checkConnection();
+        Button button = (Button)findViewById(R.id.power_off);
         System.out.println("power_off");
+
         try {
             Socket socket = new Socket(SERVER_IP, SERVERPORT);
             beamerInputStream = socket.getInputStream();
@@ -94,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             //switch on beamer
-            byte [] reply2 =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x30, (byte)0x0a };
+            byte [] reply2 =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x31, (byte)0x0a };
 
             //sock.send(b'\x21\x89\x01\x50\x57\x30\x0a')
             beamerOutputStream.write(reply2);
