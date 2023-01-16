@@ -9,6 +9,9 @@ color teal_700
 color white
 drawable ic_launcher_background
 drawable ic_launcher_foreground
+drawable roundbutton
+id connectionStatus
+id connectionStatusIcon
 id power_off
 id power_on
 layout activity_main

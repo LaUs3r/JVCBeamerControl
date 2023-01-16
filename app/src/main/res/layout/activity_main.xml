@@ -23,8 +23,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="101dp"
-        android:text="POWER OFF"
         android:onClick="power_off"
+        android:text="POWER OFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/connectionStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="125dp"
+        android:text="Connection Status: "
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/connectionStatusIcon"
+        android:layout_width="30dp"
+        android:layout_height="29dp"
+        android:layout_marginTop="124dp"
+        android:layout_marginEnd="188dp"
+        android:backgroundTint="#E30A0A"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
