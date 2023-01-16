@@ -64,19 +64,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        // Create a thread in to check the connection every 'iConnectionCheckInterval' seconds
-        //Runnable task = () -> handler.postDelayed(Thread.currentThread(), CONNECTION_CHECK_INTERVAL);
-        handler.postDelayed(runnable = new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(runnable,CONNECTION_CHECK_INTERVAL);
+        // Create a thread in to check the connection every 'CONNECTION_CHECK_INTERVAL' seconds
+        handler.postDelayed(runnable = () -> {
+            handler.postDelayed(runnable,CONNECTION_CHECK_INTERVAL);
+            try {
                 checkConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }, CONNECTION_CHECK_INTERVAL);
-
-        //handler.postDelayed(Thread.currentThread(), CONNECTION_CHECK_INTERVAL);
-
-        //new Thread(task).start();
         super.onResume();
     }
 
@@ -89,7 +85,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart()
     {
-        checkConnection();
+        try {
+            checkConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         super.onStart();
     }
 
@@ -99,9 +99,12 @@ public class MainActivity extends AppCompatActivity {
      * step 2: PJREQ
      * step 3: PJACK
      */
-    private Socket threeWayHandshake() {
+    private void threeWayHandshake() throws IOException {
         // Try to connect to the beamer
         try {
+            // In case a old socket is still open, close it and start fresh
+            if (socket != null) { socket.close(); }
+
             //System.out.println("checkConnection: " + new java.util.Date());
             Button button = (Button)findViewById(R.id.connectionStatusIcon);
 
@@ -127,32 +130,30 @@ public class MainActivity extends AppCompatActivity {
                 beamerInputStream.read(inputBuffer);
                 response = new String(inputBuffer);
                 if (response.equals("PJACK")) {
-                    System.out.println("checkConnection: PJACK received");
+                    bIsConnectable = true;
+                    // Do NOT close the socket!
                 } else {
                     bIsConnectable = false;
                     button.setBackgroundColor(Color.RED);
+                    socket.close();
                 }
             } else {
                 // PJ_OK not received
                 System.out.println("checkConnection: ERROR! PJ_OK not received!");
                 bIsConnectable = false;
                 button.setBackgroundColor(Color.RED);
+                socket.close();
             }
 
-        } catch (ConnectException e) {
-            // host and port combination not valid
-            e.printStackTrace();
-        } catch (SocketTimeoutException e) {
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             bIsConnectable = false;
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         } catch (IOException e) {
             bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         }
-        return socket;
     }
 
     /**
@@ -161,74 +162,45 @@ public class MainActivity extends AppCompatActivity {
      * 2. Verify connection
      * @return connection status to the beamer
      */
-    private boolean checkConnection() {
+    private boolean checkConnection() throws IOException {
+        boolean bSuccessfullConnect = false;
+        Button button = (Button)findViewById(R.id.connectionStatusIcon);
+
         // Try to connect to the beamer
         try {
+            this.threeWayHandshake();
             //System.out.println("checkConnection: " + new java.util.Date());
-            Button button = (Button)findViewById(R.id.connectionStatusIcon);
 
-            socket = new Socket();
-            SocketAddress socketAddress = new InetSocketAddress(SERVER_IP, SERVER_PORT);
-            socket.connect(socketAddress, SERVER_TIMEOUT);
-            beamerInputStream = socket.getInputStream();
-
-            // Create buffer for the 3-way TCP handshake
-            byte[] inputBuffer = new byte[5];
-            beamerInputStream.read(inputBuffer);
-
-            // Wait for the PJ_OK packet (in decimal 80 74 95 79 75)
-            String response = new String(inputBuffer);
-
-            if (response.equals("PJ_OK")) {
-                System.out.println("checkConnection: PJ_OK received");
-                //Send response PJREQ (in decimal 80 74 82 69 81)
-                beamerOutputStream = socket.getOutputStream();
-                beamerOutputStream.write(PJREQ);
-
-                // Wait for PJACK packet
+            if (bIsConnectable) {
+                /*
+                 * Check for correct connection to the beamer
+                 * For the expected reply the receive buffer needs to be increased to 6
+                 * Device --> Beamer: 21 89 01 00 00 0A
+                 * Beamer --> Device: 06 89 01 00 00 0A
+                 */
+                beamerOutputStream.write(CONNECTION_CHECK);
+                byte[] inputBuffer = new byte[6];
                 beamerInputStream.read(inputBuffer);
-                response = new String(inputBuffer);
-                if (response.equals("PJACK")) {
-                    System.out.println("checkConnection: PJACK received");
-
-                    /*
-                     * Check for correct connection to the beamer
-                     * For the expected reply the receive buffer needs to be increased to 6
-                     * Device --> Beamer: 21 89 01 00 00 0A
-                     * Beamer --> Device: 06 89 01 00 00 0A
-                     */
-                    beamerOutputStream.write(CONNECTION_CHECK);
-                    inputBuffer = new byte[6];
-                    beamerInputStream.read(inputBuffer);
-                    if (BinAscii.hexlify(inputBuffer).equals(SUCCESSFULL_CONNECTION_REPLY)) {
-                        bIsConnectable = true;
-                        button.setBackgroundColor(Color.GREEN);
-                    } else {
-                        bIsConnectable = false;
-                        button.setBackgroundColor(Color.RED);
-                    }
+                if (BinAscii.hexlify(inputBuffer).equals(SUCCESSFULL_CONNECTION_REPLY)) {
+                    // In case of a successful connection, do not close the socket
+                    bSuccessfullConnect = true;
+                    button.setBackgroundColor(Color.GREEN);
                 } else {
-                    bIsConnectable = false;
+                    bSuccessfullConnect = false;
                     button.setBackgroundColor(Color.RED);
                 }
             } else {
-                // PJ_OK not received
-                System.out.println("checkConnection: ERROR! PJ_OK not received!");
-                bIsConnectable = false;
+                bSuccessfullConnect = false;
                 button.setBackgroundColor(Color.RED);
             }
             socket.close();
-        } catch (ConnectException e) {
-            // host and port combination not valid
-            e.printStackTrace();
-        } catch (SocketTimeoutException e) {
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             bIsConnectable = false;
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         } catch (IOException e) {
             bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         }
         return bIsConnectable;
@@ -241,32 +213,23 @@ public class MainActivity extends AppCompatActivity {
      */
     public void power_off(View view) throws IOException {
         try {
-            if (bIsConnectable) {
-                socket = new Socket();
-                SocketAddress socketAddress = new InetSocketAddress(SERVER_IP, SERVER_PORT);
-                socket.connect(socketAddress, SERVER_TIMEOUT);
-                beamerInputStream = socket.getInputStream();
-
+            if (bIsConnectable && socket != null) {
                 //Send response PJREQ (in decimal 80 74 82 69 81)
                 beamerOutputStream = socket.getOutputStream();
-                beamerOutputStream.write(PJREQ);
 
                 //Switch off beamer
                 beamerOutputStream.write(POWER_OFF);
-
                 socket.close();
+            } else {
+                checkConnection();
             }
-        } catch (ConnectException e) {
-            // host and port combination not valid
-            e.printStackTrace();
-        } catch (SocketTimeoutException e) {
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             bIsConnectable = false;
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         } catch (IOException e) {
             bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         }
     }
@@ -278,32 +241,21 @@ public class MainActivity extends AppCompatActivity {
      */
     public void power_on(View view) throws IOException {
         try {
-            if (bIsConnectable) {
-                socket = new Socket();
-                SocketAddress socketAddress = new InetSocketAddress(SERVER_IP, SERVER_PORT);
-                socket.connect(socketAddress, SERVER_TIMEOUT);
-                beamerInputStream = socket.getInputStream();
-
+            if (bIsConnectable && socket != null) {
                 //Send response PJREQ (in decimal 80 74 82 69 81)
                 beamerOutputStream = socket.getOutputStream();
-                beamerOutputStream.write(PJREQ);
 
                 //Switch off beamer
                 beamerOutputStream.write(POWER_ON);
-
                 socket.close();
             }
-        } catch (ConnectException e) {
-            // host and port combination not valid
-            e.printStackTrace();
-        } catch (SocketTimeoutException e) {
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             bIsConnectable = false;
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         } catch (IOException e) {
             bIsConnectable = false;
+            socket.close();
             e.printStackTrace();
         }
     }
