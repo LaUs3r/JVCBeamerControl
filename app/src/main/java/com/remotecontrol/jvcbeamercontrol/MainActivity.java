@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Performs a 3-way TCP handshake to the beamer
+     * Performs a 3-way TCP handshake to the beamer.
      * step 1: PJ_OK
      * step 2: PJREQ
      * step 3: PJACK
@@ -102,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
     private void threeWayHandshake() throws IOException {
         // Try to connect to the beamer
         try {
-            // In case a old socket is still open, close it and start fresh
-            if (socket != null) { socket.close(); }
+            /*// In case a old socket is still open, close it and start fresh
+            if (socket.isConnected()) {
+                socket.close();
+            }*/
 
             //System.out.println("checkConnection: " + new java.util.Date());
             Button button = (Button)findViewById(R.id.connectionStatusIcon);
@@ -144,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
                 button.setBackgroundColor(Color.RED);
                 socket.close();
             }
-
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             bIsConnectable = false;
             socket.close();
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         // Try to connect to the beamer
         try {
             this.threeWayHandshake();
-            //System.out.println("checkConnection: " + new java.util.Date());
+            System.out.println("checkConnection: " + new java.util.Date());
 
             if (bIsConnectable) {
                 /*
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 bSuccessfullConnect = false;
                 button.setBackgroundColor(Color.RED);
             }
+            // Close the socket to make sure that no open socket remains
             socket.close();
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             bIsConnectable = false;
@@ -213,7 +215,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void power_off(View view) throws IOException {
         try {
-            if (bIsConnectable && socket != null) {
+            if (bIsConnectable) {
+                // Create a new socket
+
                 //Send response PJREQ (in decimal 80 74 82 69 81)
                 beamerOutputStream = socket.getOutputStream();
 
