@@ -196,9 +196,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             socket.close();
             e.printStackTrace();
-        } catch (IOException e) {
-            socket.close();
-            e.printStackTrace();
         }
     }
 
@@ -218,9 +215,6 @@ public class MainActivity extends AppCompatActivity {
                 socket.close();
             }
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
-            socket.close();
-            e.printStackTrace();
-        } catch (IOException e) {
             socket.close();
             e.printStackTrace();
         }
