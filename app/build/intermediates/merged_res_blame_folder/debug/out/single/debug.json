@@ -44,12 +44,12 @@
         "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-main-31:/mipmap-xhdpi/ic_launcher.webp"
     },
     {
-        "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/drawable-v24_roundbutton.xml.flat",
-        "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-main-31:/drawable-v24/roundbutton.xml"
-    },
-    {
         "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-anydpi-v26_ic_launcher.xml.flat",
         "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-main-31:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/drawable-v24_roundbutton.xml.flat",
+        "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-main-31:/drawable-v24/roundbutton.xml"
     },
     {
         "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
