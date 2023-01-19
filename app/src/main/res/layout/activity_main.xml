@@ -14,7 +14,7 @@
         android:layout_marginTop="39dp"
         android:backgroundTint="@android:color/holo_blue_dark"
         android:onClick="power_on"
-        android:text="Power ON"
+        android:text="@string/power_on"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -26,7 +26,7 @@
         android:layout_marginEnd="101dp"
         android:backgroundTint="@android:color/holo_blue_dark"
         android:onClick="power_off"
-        android:text="POWER OFF"
+        android:text="@string/power_off"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

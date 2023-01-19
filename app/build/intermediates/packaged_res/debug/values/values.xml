@@ -8,6 +8,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
     <string name="app_name">JVC BeamerControl</string>
+    <string name="power_off">Power OFF</string>
+    <string name="power_on">Power ON</string>
     <style name="Theme.JavaBeamerTest" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         
         <item name="colorPrimary">@color/purple_500</item>

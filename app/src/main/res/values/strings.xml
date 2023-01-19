@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">JVC BeamerControl</string>
+    <string name="power_on">Power ON</string>
+    <string name="power_off">Power OFF</string>
 </resources>

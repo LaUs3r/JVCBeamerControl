@@ -18,7 +18,7 @@ import android.widget.EditText;
 // pattern is consistent with how other android Widgets are invoked, so I went
 // with this to prevent confusion
 
-public class IPAddressText extends EditText {
+public class IPAddressText extends androidx.appcompat.widget.AppCompatEditText {
 
     public IPAddressText(Context context) {
         super(context);

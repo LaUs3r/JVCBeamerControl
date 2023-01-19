@@ -1,24 +1,18 @@
 package com.remotecontrol.jvcbeamercontrol;
 
-import static com.google.android.material.internal.ContextUtils.getActivity;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-
 import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +22,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final byte[] CONNECTION_CHECK = { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x0a };
     private static final byte[] POWER_OFF =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x30, (byte)0x0a };
     private static final byte[] POWER_ON =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x31, (byte)0x0a };
-    final protected static String SUCCESSFULL_CONNECTION_REPLY = "06890100000A";
+    final protected static String SUCCESSFUL_CONNECTION_REPLY = "06890100000A";
     private static final int CONNECTION_CHECK_INTERVAL = 30000;
     Handler handler = new Handler();
     Runnable runnable;
@@ -167,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
      * @return connection status to the beamer
      */
     private boolean checkConnection() throws IOException {
-        boolean bSuccessfullConnect;
+        boolean bSuccessfulConnect;
 
         // Try to connect to the beamer
         try {
@@ -184,18 +179,18 @@ public class MainActivity extends AppCompatActivity {
                 beamerInputStream.read(inputBuffer);
 
                 // In case of a successful connection, do not close the socket
-                bSuccessfullConnect = BinAscii.hexlify(inputBuffer).equals(SUCCESSFULL_CONNECTION_REPLY);
+                bSuccessfulConnect = BinAscii.hexlify(inputBuffer).equals(SUCCESSFUL_CONNECTION_REPLY);
                 // Close the socket to make sure that no open socket remains
                 socket.close();
             } else {
-                bSuccessfullConnect = false;
+                bSuccessfulConnect = false;
             }
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             socket.close();
             e.printStackTrace();
             return false;
         }
-        return bSuccessfullConnect;
+        return bSuccessfulConnect;
     }
 
     /**
@@ -263,18 +258,21 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(port); // Another
 
         if (!SERVER_IP.equals("")) ipAddress.setText(SERVER_IP);
-        if (SERVER_PORT != 0) port.setText("" + SERVER_PORT);
+        if (SERVER_PORT != 0) port.setText(new DecimalFormat("#").format(SERVER_PORT));
 
-        builder.setView(layout); // Again this is a set method, not add
-        // Set up the buttons
+        builder.setView(layout);
         builder.setPositiveButton("OK", (dialog, which) -> {
             SERVER_IP = ipAddress.getText().toString();
             SERVER_PORT = Integer.parseInt(port.getText().toString());
             saveIPAddress(SERVER_IP);
             savePort(SERVER_PORT);
-            try { checkConnection(); } catch (IOException e) {
-                e.printStackTrace();}
+            try {
+                checkConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
+
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
