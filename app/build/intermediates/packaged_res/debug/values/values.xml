@@ -8,6 +8,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="white">#FFFFFFFF</color>
     <string name="app_name">JVC BeamerControl</string>
+    <string name="connection_status">Connection Status:</string>
+    <string name="ip_address_port">IP_address_port</string>
     <string name="power_off">Power OFF</string>
     <string name="power_on">Power ON</string>
     <style name="Theme.JavaBeamerTest" parent="Theme.MaterialComponents.DayNight.DarkActionBar">

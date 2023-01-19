@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setView(layout);
         builder.setPositiveButton("OK", (dialog, which) -> {
-            SERVER_IP = ipAddress.getText().toString();
+            if (ipAddress.getText() != null) { SERVER_IP = ipAddress.getText().toString(); }
             SERVER_PORT = Integer.parseInt(port.getText().toString());
             saveIPAddress(SERVER_IP);
             savePort(SERVER_PORT);

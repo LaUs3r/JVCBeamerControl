@@ -2,4 +2,6 @@
     <string name="app_name">JVC BeamerControl</string>
     <string name="power_on">Power ON</string>
     <string name="power_off">Power OFF</string>
+    <string name="connection_status">Connection Status:</string>
+    <string name="ip_address_port">IP_address_port</string>
 </resources>

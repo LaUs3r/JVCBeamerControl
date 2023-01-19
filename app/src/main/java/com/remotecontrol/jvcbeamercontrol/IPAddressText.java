@@ -5,12 +5,12 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.widget.EditText;
 
 /**
  * EditText that only allows input of IP Addresses, using the Phone
  * input type, and automatically inserts periods at the earliest appropriate
  * interval.
+ * Source: https://gist.github.com/fingerboxes/5156294
  */
 
 // Note; this probably isn't the best pattern for this - a Factory of Decorator
@@ -24,32 +24,29 @@ public class IPAddressText extends androidx.appcompat.widget.AppCompatEditText {
         super(context);
 
         setInputType(InputType.TYPE_CLASS_PHONE);
-        setFilters(new InputFilter[]{new InputFilter() {
-            @Override
-            public CharSequence filter(CharSequence source, int start, int end, android.text.Spanned dest, int dstart, int dend) {
-                if (end > start) {
-                    String destTxt = dest.toString();
-                    String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
-                    if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
-                        return "";
-                    } else {
-                        //String[] splits = resultingTxt.split("\\.");
-                        String[] splits = resultingTxt.split("\\.");
-                        for (int i = 0; i < splits.length; i++) {
-                            if (Integer.valueOf(splits[i]) > 255) {
-                                return "";
-                            }
+        setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
+            if (end > start) {
+                String destTxt = dest.toString();
+                String resultingTxt = destTxt.substring(0, dstart) + source.subSequence(start, end) + destTxt.substring(dend);
+                if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
+                    return "";
+                } else {
+                    //String[] splits = resultingTxt.split("\\.");
+                    String[] splits = resultingTxt.split("\\.");
+                    for (String split : splits) {
+                        if (Integer.parseInt(split) > 255) {
+                            return "";
                         }
                     }
                 }
-                return null;
             }
+            return null;
         }
         });
 
         addTextChangedListener(new TextWatcher() {
             boolean deleting = false;
-            int lastCount = 0;
+            final int lastCount = 0;
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -60,18 +57,13 @@ public class IPAddressText extends androidx.appcompat.widget.AppCompatEditText {
                     if (string.length() == 3 || string.equalsIgnoreCase("0")
                             || (string.length() == 2 && Character.getNumericValue(string.charAt(0)) > 1)) {
                         s.append('.');
-                        return;
                     }
                 }
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (lastCount < count) {
-                    deleting = false;
-                } else {
-                    deleting = true;
-                }
+                deleting = lastCount >= count;
             }
 
             @Override

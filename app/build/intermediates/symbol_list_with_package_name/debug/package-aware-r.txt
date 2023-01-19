@@ -3361,6 +3361,7 @@ string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
 string clear_text_end_icon_content_description
+string connection_status
 string error_a11y_label
 string error_icon_content_description
 string exposed_dropdown_menu_content_description
@@ -3368,6 +3369,7 @@ string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
 string hide_bottom_view_on_scroll_behavior
 string icon_content_description
+string ip_address_port
 string item_view_role_description
 string m3_sys_motion_easing_emphasized
 string m3_sys_motion_easing_emphasized_accelerate
