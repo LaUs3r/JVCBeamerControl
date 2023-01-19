@@ -2866,6 +2866,7 @@ id indeterminate
 id info
 id invisible
 id inward
+id ipaddress
 id italic
 id item_touch_helper_previous_elevation
 id jumpToEnd
@@ -2973,6 +2974,7 @@ id pathRelative
 id peekHeight
 id percent
 id pin
+id port
 id position
 id postLayout
 id power_off
@@ -3082,7 +3084,10 @@ id textinput_helper_text
 id textinput_placeholder
 id textinput_prefix_text
 id textinput_suffix_text
+id textipaddress
+id textport
 id time
+id titel
 id title
 id titleDividerNoCustom
 id title_template
@@ -3260,6 +3265,7 @@ layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_end_icon
 layout design_text_input_start_icon
+layout ipaddresssettings
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

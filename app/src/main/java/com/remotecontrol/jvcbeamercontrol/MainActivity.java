@@ -1,17 +1,24 @@
 package com.remotecontrol.jvcbeamercontrol;
 
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,8 +33,8 @@ import java.net.UnknownHostException;
 public class MainActivity extends AppCompatActivity {
 
     private Socket socket;
-    private static final int SERVER_PORT = 20554;
-    //private static final String SERVER_IP = "192.168.100.5";
+    //private static final int SERVER_PORT = 20554;
+    private int SERVER_PORT = 0;
     private String SERVER_IP = "";
     private static final int SERVER_TIMEOUT = 5000;
     private OutputStream beamerOutputStream;
@@ -83,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
     {
         try {
             statusIcon = findViewById(R.id.connectionStatusIcon);
-            System.out.println("Current IP: " + SERVER_IP);
             readSavedIPAddress();
+            readSavedPort();
 
             if (checkConnection()) {
                 statusIcon.setBackgroundColor(Color.GREEN);
@@ -239,31 +246,36 @@ public class MainActivity extends AppCompatActivity {
      */
     public void showSettingsDialog(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter IP address");
+        Context context = this;
+        LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        builder.setTitle("Enter IP address and port");
 
-        // Set up the input
-        final IPAddressText input = new IPAddressText(this);
+        // Add a TextView here for the "Title" label, as noted in the comments
+        final IPAddressText ipAddress = new IPAddressText(context);
+        ipAddress.setHint("IP Address");
+        layout.addView(ipAddress); // Notice this is an add method
 
-        builder.setView(input);
-        if (!SERVER_IP.equals("")) input.setText(SERVER_IP);
+        // Add another TextView here for the "Description" label
+        final EditText port = new EditText(context);
+        port.setInputType(InputType.TYPE_CLASS_NUMBER);
+        port.setHint("Port Number");
+        layout.addView(port); // Another
 
+        if (!SERVER_IP.equals("")) ipAddress.setText(SERVER_IP);
+        if (SERVER_PORT != 0) port.setText("" + SERVER_PORT);
+
+        builder.setView(layout); // Again this is a set method, not add
         // Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                SERVER_IP = input.getText().toString();
-                saveIPAddress(SERVER_IP);
-                try { checkConnection(); } catch (IOException e) {
-                    e.printStackTrace();}
-            }
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            SERVER_IP = ipAddress.getText().toString();
+            SERVER_PORT = Integer.parseInt(port.getText().toString());
+            saveIPAddress(SERVER_IP);
+            savePort(SERVER_PORT);
+            try { checkConnection(); } catch (IOException e) {
+                e.printStackTrace();}
         });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
         builder.show();
     }
 
@@ -279,10 +291,29 @@ public class MainActivity extends AppCompatActivity {
    }
 
     /**
+     * Saves the given port from the settings dialog
+     * @param port of the beamer
+     */
+    private void savePort(int port) {
+        SharedPreferences sharedPref = getSharedPreferences("JVC BeamerControl", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt("SERVER_PORT", port);
+        editor.apply();
+    }
+
+    /**
      * Reads the last given IP address to the global variable to be used in the app
      */
     private void readSavedIPAddress() {
         SharedPreferences sharedPref = getSharedPreferences("JVC BeamerControl", Context.MODE_PRIVATE);
         SERVER_IP = sharedPref.getString("SERVER_IP", SERVER_IP);
+    }
+
+    /**
+     * Reads the last given IP address to the global variable to be used in the app
+     */
+    private void readSavedPort() {
+        SharedPreferences sharedPref = getSharedPreferences("JVC BeamerControl", Context.MODE_PRIVATE);
+        SERVER_PORT = sharedPref.getInt("SERVER_PORT", SERVER_PORT);
     }
 }

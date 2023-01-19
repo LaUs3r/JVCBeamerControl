@@ -12,10 +12,16 @@ drawable ic_launcher_foreground
 drawable roundbutton
 id connectionStatus
 id connectionStatusIcon
+id ipaddress
+id port
 id power_off
 id power_on
 id settingsButton
+id textipaddress
+id textport
+id titel
 layout activity_main
+layout ipaddresssettings
 mipmap ic_launcher
 mipmap ic_launcher_round
 string app_name

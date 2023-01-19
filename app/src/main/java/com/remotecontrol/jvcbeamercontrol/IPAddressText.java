@@ -33,6 +33,7 @@ public class IPAddressText extends EditText {
                     if (!resultingTxt.matches("^\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3}(\\.(\\d{1,3})?)?)?)?)?)?")) {
                         return "";
                     } else {
+                        //String[] splits = resultingTxt.split("\\.");
                         String[] splits = resultingTxt.split("\\.");
                         for (int i = 0; i < splits.length; i++) {
                             if (Integer.valueOf(splits[i]) > 255) {
