@@ -1,6 +1,11 @@
 package com.remotecontrol.jvcbeamercontrol;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +22,13 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private Socket socket;
     private static final int SERVER_PORT = 20554;
-    private static final String SERVER_IP = "192.168.100.5";
+    //private static final String SERVER_IP = "192.168.100.5";
+    private String SERVER_IP = "";
     private static final int SERVER_TIMEOUT = 5000;
     private OutputStream beamerOutputStream;
     private InputStream beamerInputStream;
@@ -68,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         handler.removeCallbacks(runnable);
         super.onPause();
+        saveIPAddress(this.SERVER_IP);
     }
 
     @Override
@@ -75,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     {
         try {
             statusIcon = findViewById(R.id.connectionStatusIcon);
+            System.out.println("Current IP: " + SERVER_IP);
+            readSavedIPAddress();
+
             if (checkConnection()) {
                 statusIcon.setBackgroundColor(Color.GREEN);
             } else {
@@ -84,7 +95,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         super.onStart();
+        //adSavedIPAddress();
     }
+
 
     /**
      * Performs a 3-way TCP handshake to the beamer.
@@ -180,8 +193,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Power off the beamer
-     * @param view
-     * @throws IOException
+     * @param view current view
+     * @throws ConnectException, SocketTimeoutException, UnknownHostException
      */
     public void power_off(View view) throws IOException {
         try {
@@ -201,8 +214,8 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Power on the beamer
-     * @param view
-     * @throws IOException
+     * @param view current view
+     * @throws ConnectException, SocketTimeoutException, UnknownHostException
      */
     public void power_on(View view) throws IOException {
         try {
@@ -218,5 +231,58 @@ public class MainActivity extends AppCompatActivity {
             socket.close();
             e.printStackTrace();
         }
+    }
+
+    /**
+     *
+     * @param view current view
+     */
+    public void showSettingsDialog(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter IP address");
+
+        // Set up the input
+        final IPAddressText input = new IPAddressText(this);
+
+        builder.setView(input);
+        if (!SERVER_IP.equals("")) input.setText(SERVER_IP);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SERVER_IP = input.getText().toString();
+                saveIPAddress(SERVER_IP);
+                try { checkConnection(); } catch (IOException e) {
+                    e.printStackTrace();}
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+    /**
+     * Saves the given IP address from the settings dialog
+     * @param IPAddress of the beamer
+     */
+   private void saveIPAddress(String IPAddress) {
+       SharedPreferences sharedPref = getSharedPreferences("JVC BeamerControl", Context.MODE_PRIVATE);
+       SharedPreferences.Editor editor = sharedPref.edit();
+       editor.putString("SERVER_IP", IPAddress);
+       editor.apply();
+   }
+
+    /**
+     * Reads the last given IP address to the global variable to be used in the app
+     */
+    private void readSavedIPAddress() {
+        SharedPreferences sharedPref = getSharedPreferences("JVC BeamerControl", Context.MODE_PRIVATE);
+        SERVER_IP = sharedPref.getString("SERVER_IP", SERVER_IP);
     }
 }
