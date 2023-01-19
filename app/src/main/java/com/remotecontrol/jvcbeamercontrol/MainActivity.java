@@ -28,8 +28,7 @@ import java.text.DecimalFormat;
 public class MainActivity extends AppCompatActivity {
 
     private Socket socket;
-    //private static final int SERVER_PORT = 20554;
-    private int SERVER_PORT = 0;
+    private int SERVER_PORT = 20554; // Port 20554 is a commonly used port for JVC beamers
     private String SERVER_IP = "";
     private static final int SERVER_TIMEOUT = 5000;
     private OutputStream beamerOutputStream;
