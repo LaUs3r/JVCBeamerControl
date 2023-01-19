@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         handler.removeCallbacks(runnable);
         super.onPause();
         saveIPAddress(this.SERVER_IP);
+        savePort(this.SERVER_PORT);
     }
 
     @Override
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         super.onStart();
-        //adSavedIPAddress();
     }
 
 
@@ -261,13 +261,17 @@ public class MainActivity extends AppCompatActivity {
         if (SERVER_PORT != 0) port.setText(new DecimalFormat("#").format(SERVER_PORT));
 
         builder.setView(layout);
+
+        // Add the buttons
         builder.setPositiveButton("OK", (dialog, which) -> {
             if (ipAddress.getText() != null) { SERVER_IP = ipAddress.getText().toString(); }
             SERVER_PORT = Integer.parseInt(port.getText().toString());
             saveIPAddress(SERVER_IP);
             savePort(SERVER_PORT);
             try {
-                checkConnection();
+                if (checkConnection() ) { statusIcon.setBackgroundColor(Color.GREEN); } else {
+                    statusIcon.setBackgroundColor(Color.RED);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
