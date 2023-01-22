@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".MainActivity">
 
     <Button
@@ -37,6 +38,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="125dp"
         android:text="@string/connection_status"
+        android:textColor="@android:color/holo_blue_light"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,13 +54,16 @@
 
     <ImageButton
         android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="63dp"
+        android:layout_height="69dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:background="#00FFFFFF"
+        android:contentDescription="@string/ip_address_port"
+        android:foreground="@drawable/ic_settings"
+        android:foregroundTint="@android:color/holo_blue_light"
         android:onClick="showSettingsDialog"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_add"
-        android:contentDescription="@string/ip_address_port" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
