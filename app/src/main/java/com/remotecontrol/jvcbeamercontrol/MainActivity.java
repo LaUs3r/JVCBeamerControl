@@ -22,6 +22,7 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.channels.InterruptedByTimeoutException;
 import java.text.DecimalFormat;
 
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private Socket socket;
     private int SERVER_PORT = 20554; // Port 20554 is a commonly used port for JVC beamers
     private String SERVER_IP = "";
+    private String POWER_STATUS = ""; // Power status can be ON, OFF oder COOLING_DOWN
     private static final int SERVER_TIMEOUT = 5000;
     private OutputStream beamerOutputStream;
     private InputStream beamerInputStream;
@@ -37,9 +39,17 @@ public class MainActivity extends AppCompatActivity {
     private static final byte[] PJREQ = new byte[]  { 80, 74, 82, 69, 81 };
     private static final byte[] CONNECTION_CHECK = { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x0a };
     private static final byte[] POWER_CHECK =  { (byte)0x3F, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x0a };
+    private static final byte[] HDMI_CHECK =  { (byte)0x3F, (byte)0x89, (byte)0x01, (byte)0x49, (byte)0x50, (byte)0x0a };
     private static final byte[] POWER_OFF =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x30, (byte)0x0a };
     private static final byte[] POWER_ON =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x31, (byte)0x0a };
+    private static final byte[] HDMI_1_ON =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x49, (byte)0x50, (byte)0x36, (byte)0x0a };
+    private static final byte[] HDMI_2_ON =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x49, (byte)0x50, (byte)0x37, (byte)0x0a };
     final protected static String SUCCESSFUL_CONNECTION_REPLY = "06890100000A";
+    final protected static String POWERED_ON = "4089015057310A";
+    final protected static String POWERED_OFF = "4089015057300A";
+    final protected static String COOLING_DOWN = "4089015057320A";
+    final protected static String HDMI_1 = "4089014950360A";
+    final protected static String HDMI_2 = "4089014950370A";
     private static final int CONNECTION_CHECK_INTERVAL = 30000;
     Handler handler = new Handler();
     Runnable runnable;
@@ -126,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 response = new String(inputBuffer);
                 if (response.equals("PJACK")) {
                     bool3WayHandshake =  true;
+                    System.out.println("checkConnection: PJACK receveid!");
                     // Do NOT close the socket!
                 } else {
                     socket.close();
@@ -146,6 +157,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Checks which HDMi port is selected. This only works if the beamer is ON
+     * The active HDMI port is highlighted with a "green" background.
+     * @throws ConnectException, SocketTimeoutException, UnknownHostException
+     */
+    public void checkHDMIInput() throws IOException {
+        if (socket != null && POWER_STATUS.equals("ON")) {
+            try {
+                beamerOutputStream.write(HDMI_CHECK);
+
+                byte[] inputBuffer = new byte[6];
+                beamerInputStream.read(inputBuffer);
+                String reply = BinAscii.hexlify(inputBuffer);
+
+                inputBuffer = new byte[7];
+                beamerInputStream.read(inputBuffer);
+
+                reply = BinAscii.hexlify(inputBuffer);
+
+                Button hdmi_1 = findViewById(R.id.hdmi_1);
+                Button hdmi_2 = findViewById(R.id.hdmi_2);
+
+                switch (reply) {
+                    case HDMI_1:
+                        // Input is on HDMI 1
+                        hdmi_1.setBackgroundColor(Color.GREEN);
+                        hdmi_2.setBackgroundColor(getColor(R.color.holo_blue_dark));
+                        break;
+                    case HDMI_2:
+                        // Input is on HDMI 2
+                        hdmi_1.setBackgroundColor(getColor(R.color.holo_blue_dark));
+                        hdmi_2.setBackgroundColor(Color.GREEN);
+                        break;
+                }
+            } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
+                socket.close();
+                e.printStackTrace();
+            }
+        } else {
+            Button hdmi_1 = findViewById(R.id.hdmi_1);
+            Button hdmi_2 = findViewById(R.id.hdmi_2);
+            hdmi_1.setBackgroundColor(getColor(R.color.holo_blue_dark));
+            hdmi_2.setBackgroundColor(getColor(R.color.holo_blue_dark));
+        }
+    }
+
+    /**
      * Checks the power status of the beamer
      * !!! DO NOT CLOSE THE SOCKET IN THIS METHOD AS IT WILL BE CLOSED IN THE CONNECTION_CHECK
      * Reply is 4089015057xx0A where xx can have the following values:
@@ -157,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
     private void check_power() throws IOException {
         if (socket != null) {
             try {
-
                 beamerOutputStream.write(POWER_CHECK);
 
                 byte[] inputBuffer = new byte[6];
@@ -169,17 +225,20 @@ public class MainActivity extends AppCompatActivity {
 
                 Button powerIcon = findViewById(R.id.powerStatusIcon);
                 switch (reply) {
-                    case "4089015057310A":
+                    case POWERED_ON:
                         // Beamer is powered ON
                         powerIcon.setBackgroundColor(Color.GREEN);
+                        POWER_STATUS = "ON";
                         break;
-                    case "4089015057300A":
+                    case POWERED_OFF:
                         // Beamer is powered OFF
                         powerIcon.setBackgroundColor(Color.RED);
+                        POWER_STATUS = "OFF";
                         break;
-                    case "4089015057320A":
+                    case COOLING_DOWN:
                         // Beamer is cooling down
                         powerIcon.setBackgroundColor(Color.BLUE);
+                        POWER_STATUS = "COOLING_DOWN";
                         break;
                 }
             } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
@@ -212,12 +271,14 @@ public class MainActivity extends AppCompatActivity {
                 beamerOutputStream.write(CONNECTION_CHECK);
                 byte[] inputBuffer = new byte[6];
                 beamerInputStream.read(inputBuffer);
-
                 bSuccessfulConnect = BinAscii.hexlify(inputBuffer).equals(SUCCESSFUL_CONNECTION_REPLY);
                 statusIcon.setBackgroundColor(Color.GREEN);
 
                 // Check the power status of the beamer
                 check_power();
+
+                // Check the HDMI connection
+                checkHDMIInput();
 
                 // Close the socket to make sure that no open socket remains
                 socket.close();
@@ -242,7 +303,6 @@ public class MainActivity extends AppCompatActivity {
     public void power_off(View view) throws IOException {
         try {
             if (threeWayHandshake() && socket != null) {
-                //Send response PJREQ (in decimal 80 74 82 69 81)
                 beamerOutputStream = socket.getOutputStream();
 
                 //Switch off beamer
@@ -263,11 +323,63 @@ public class MainActivity extends AppCompatActivity {
     public void power_on(View view) throws IOException {
         try {
             if (threeWayHandshake() && socket != null) {
-                //Send response PJREQ (in decimal 80 74 82 69 81)
                 beamerOutputStream = socket.getOutputStream();
 
-                //Switch off beamer
+                //Switch on beamer
                 beamerOutputStream.write(POWER_ON);
+                socket.close();
+            }
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
+            socket.close();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Selects HDMI port 1.
+     * This only works if the beamer is ON
+     * @param view current view
+     * @throws ConnectException, SocketTimeoutException, UnknownHostException
+     */
+    public void selectHdmi1(View view) throws IOException {
+        try {
+            if (threeWayHandshake() && socket != null && POWER_STATUS.equals("ON")) {
+                beamerOutputStream = socket.getOutputStream();
+
+                // Select HDMI port 1
+                beamerOutputStream.write(HDMI_1_ON);
+                byte[] inputBuffer = new byte[6];
+                beamerInputStream.read(inputBuffer);
+                String reply = BinAscii.hexlify(inputBuffer);
+                // correct reply: 06890149500A
+                checkHDMIInput();
+                socket.close();
+            }
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
+            socket.close();
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Selects HDMI port 2.
+     * This only works if the beamer is ON
+     * @param view current view
+     * @throws ConnectException, SocketTimeoutException, UnknownHostException
+     */
+    public void selectHdmi2(View view) throws IOException {
+        try {
+            if (threeWayHandshake() && socket != null && POWER_STATUS.equals("ON")) {
+                // Send response PJREQ (in decimal 80 74 82 69 81)
+                beamerOutputStream = socket.getOutputStream();
+
+                // Select HDMI port 2
+                beamerOutputStream.write(HDMI_2_ON);
+                byte[] inputBuffer = new byte[6];
+                beamerInputStream.read(inputBuffer);
+                String reply = BinAscii.hexlify(inputBuffer);
+                // correct reply: 06890149500A
+                checkHDMIInput();
                 socket.close();
             }
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
@@ -296,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
         final EditText port = new EditText(context);
         port.setInputType(InputType.TYPE_CLASS_NUMBER);
         port.setHint("Port Number");
-        layout.addView(port); // Another
+        layout.addView(port);
 
         if (!SERVER_IP.equals("")) ipAddress.setText(SERVER_IP);
         if (SERVER_PORT != 0) port.setText(new DecimalFormat("#").format(SERVER_PORT));

@@ -1,4 +1,4 @@
-#Mon Jan 23 13:49:25 CET 2023
+#Mon Jan 23 21:41:30 CET 2023
 base.2=/home/laus3r/Dev/git/JVCBeamerControl/app/build/intermediates/dex/debug/mergeProjectDexDebug/7/classes.dex
 path.2=7/classes.dex
 base.1=/home/laus3r/Dev/git/JVCBeamerControl/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex

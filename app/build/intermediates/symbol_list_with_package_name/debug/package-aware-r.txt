@@ -1326,8 +1326,10 @@ color error_color_material_dark
 color error_color_material_light
 color foreground_material_dark
 color foreground_material_light
+color grey
 color highlighted_text_material_dark
 color highlighted_text_material_light
+color holo_blue_dark
 color ic_launcher_background
 color m3_appbar_overlay_color
 color m3_assist_chip_icon_tint_color
@@ -2559,6 +2561,7 @@ drawable design_ic_visibility
 drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
+drawable dotted_border
 drawable ic_clock_black_24dp
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_background
@@ -2851,6 +2854,8 @@ id group_divider
 id grouping
 id groups
 id guideline
+id hdmi_1
+id hdmi_2
 id header_title
 id hideable
 id home
@@ -3016,6 +3021,7 @@ id search_mag_icon
 id search_plate
 id search_src_text
 id search_voice_btn
+id selectInput
 id select_dialog_listview
 id selected
 id selection_type

@@ -1,6 +1,8 @@
 R_DEF: Internal format may change without notice
 local
 color black
+color grey
+color holo_blue_dark
 color ic_launcher_background
 color purple_200
 color purple_500
@@ -9,17 +11,21 @@ color teal_200
 color teal_700
 color white
 drawable background
+drawable dotted_border
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_settings
 drawable roundbutton
 id connectionStatus
 id connectionStatusIcon
+id hdmi_1
+id hdmi_2
 id powerStatus
 id powerStatusIcon
 id power_off
 id power_on
 id rootview
+id selectInput
 id settingsButton
 layout activity_main
 mipmap ic_launcher
