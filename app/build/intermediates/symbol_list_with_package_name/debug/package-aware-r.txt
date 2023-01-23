@@ -2978,6 +2978,8 @@ id percent
 id pin
 id position
 id postLayout
+id powerStatus
+id powerStatusIcon
 id power_off
 id power_on
 id pressed
@@ -2991,6 +2993,7 @@ id right
 id rightToLeft
 id right_icon
 id right_side
+id rootview
 id rounded
 id row_index_key
 id save_non_transition_alpha
@@ -3469,6 +3472,7 @@ string path_password_eye_mask_visible
 string path_password_strike_through
 string power_off
 string power_on
+string power_status
 string search_menu_title
 string status_bar_notification_info_overflow
 style AlertDialog_AppCompat

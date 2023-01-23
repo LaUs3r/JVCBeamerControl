@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private Button statusIcon;
     private static final byte[] PJREQ = new byte[]  { 80, 74, 82, 69, 81 };
     private static final byte[] CONNECTION_CHECK = { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x0a };
+    private static final byte[] POWER_CHECK =  { (byte)0x3F, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x0a };
     private static final byte[] POWER_OFF =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x30, (byte)0x0a };
     private static final byte[] POWER_ON =  { (byte)0x21, (byte)0x89, (byte)0x01, (byte)0x50, (byte)0x57, (byte)0x31, (byte)0x0a };
     final protected static String SUCCESSFUL_CONNECTION_REPLY = "06890100000A";
@@ -59,12 +60,7 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(runnable = () -> {
             handler.postDelayed(runnable,CONNECTION_CHECK_INTERVAL);
             try {
-                statusIcon = findViewById(R.id.connectionStatusIcon);
-                if (checkConnection()) {
-                    statusIcon.setBackgroundColor(Color.GREEN);
-                } else {
-                    statusIcon.setBackgroundColor(Color.RED);
-                }
+                checkConnection();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -87,12 +83,7 @@ public class MainActivity extends AppCompatActivity {
             statusIcon = findViewById(R.id.connectionStatusIcon);
             readSavedIPAddress();
             readSavedPort();
-
-            if (checkConnection()) {
-                statusIcon.setBackgroundColor(Color.GREEN);
-            } else {
-                statusIcon.setBackgroundColor(Color.RED);
-            }
+            checkConnection();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -155,6 +146,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Checks the power status of the beamer
+     * !!! DO NOT CLOSE THE SOCKET IN THIS METHOD AS IT WILL BE CLOSED IN THE CONNECTION_CHECK
+     * Reply is 4089015057xx0A where xx can have the following values:
+     * xx = 30 --> Standby
+     * xx = 31 --> power on
+     * xx = 32 --> cooling down
+     * @throws ConnectException, SocketTimeoutException, UnknownHostException
+     */
+    private void check_power() throws IOException {
+        try {
+                beamerOutputStream.write(POWER_CHECK);
+
+                byte[] inputBuffer = new byte[6];
+                beamerInputStream.read(inputBuffer);
+
+                inputBuffer = new byte[7];
+                beamerInputStream.read(inputBuffer);
+                String reply = BinAscii.hexlify(inputBuffer);
+
+                Button powerIcon = findViewById(R.id.powerStatusIcon);
+                switch (reply) {
+                    case "4089015057310A":
+                        // Beamer is powered ON
+                        powerIcon.setBackgroundColor(Color.GREEN);
+                        break;
+                    case "4089015057300A":
+                        // Beamer is powered OFF
+                        powerIcon.setBackgroundColor(Color.RED);
+                        break;
+                    case "4089015057320A":
+                        // Beamer is cooling down
+                        powerIcon.setBackgroundColor(Color.BLUE);
+                        break;
+                }
+        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
+            socket.close();
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Check for a correct connection to the beamer.
      * 1. Perform 3-way TCP handshake
      * 2. Verify connection
@@ -162,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private boolean checkConnection() throws IOException {
         boolean bSuccessfulConnect;
+        statusIcon =  findViewById(R.id.connectionStatusIcon);
 
         // Try to connect to the beamer
         try {
@@ -177,15 +210,21 @@ public class MainActivity extends AppCompatActivity {
                 byte[] inputBuffer = new byte[6];
                 beamerInputStream.read(inputBuffer);
 
-                // In case of a successful connection, do not close the socket
                 bSuccessfulConnect = BinAscii.hexlify(inputBuffer).equals(SUCCESSFUL_CONNECTION_REPLY);
+                statusIcon.setBackgroundColor(Color.GREEN);
+
+                // Check the power status of the beamer
+                check_power();
+
                 // Close the socket to make sure that no open socket remains
                 socket.close();
             } else {
                 bSuccessfulConnect = false;
+                statusIcon.setBackgroundColor(Color.RED);
             }
         } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
             socket.close();
+            statusIcon.setBackgroundColor(Color.RED);
             e.printStackTrace();
             return false;
         }

@@ -13,6 +13,7 @@
     <string name="ip_address_port">IP_address_port</string>
     <string name="power_off">Power OFF</string>
     <string name="power_on">Power ON</string>
+    <string name="power_status">Power Status:</string>
     <style name="Theme.JavaBeamerTest" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         
         <item name="colorPrimary">@android:color/holo_blue_light</item>
