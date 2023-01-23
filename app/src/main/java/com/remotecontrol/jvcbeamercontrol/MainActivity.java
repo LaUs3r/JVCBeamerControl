@@ -155,7 +155,9 @@ public class MainActivity extends AppCompatActivity {
      * @throws ConnectException, SocketTimeoutException, UnknownHostException
      */
     private void check_power() throws IOException {
-        try {
+        if (socket != null) {
+            try {
+
                 beamerOutputStream.write(POWER_CHECK);
 
                 byte[] inputBuffer = new byte[6];
@@ -180,9 +182,10 @@ public class MainActivity extends AppCompatActivity {
                         powerIcon.setBackgroundColor(Color.BLUE);
                         break;
                 }
-        } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
-            socket.close();
-            e.printStackTrace();
+            } catch (ConnectException | SocketTimeoutException | UnknownHostException e) {
+                socket.close();
+                e.printStackTrace();
+            }
         }
     }
 
