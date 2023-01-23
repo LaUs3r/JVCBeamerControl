@@ -40,20 +40,16 @@
         "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-debug-30:/mipmap-hdpi/ic_launcher_foreground.png"
     },
     {
-        "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-hdpi_ic_launcher_round.png.flat",
-        "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-debug-30:/mipmap-hdpi/ic_launcher_round.png"
-    },
-    {
         "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/layout_activity_main.xml.flat",
         "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-main-31:/layout/activity_main.xml"
     },
     {
-        "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-xxhdpi_ic_launcher_round.png.flat",
-        "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-debug-30:/mipmap-xxhdpi/ic_launcher_round.png"
+        "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-debug-30:/mipmap-hdpi/ic_launcher_round.png"
     },
     {
-        "merged": "com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/drawable_dotted_border.xml.flat",
-        "source": "com.remotecontrol.jvcbeamercontrol.app-main-31:/drawable/dotted_border.xml"
+        "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-debug-30:/mipmap-xxhdpi/ic_launcher_round.png"
     },
     {
         "merged": "/home/laus3r/.gradle/daemon/7.4/com.remotecontrol.jvcbeamercontrol.app-merged_res-29:/mipmap-xxhdpi_ic_launcher.png.flat",

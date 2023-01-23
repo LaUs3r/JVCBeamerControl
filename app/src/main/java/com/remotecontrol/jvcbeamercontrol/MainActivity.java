@@ -22,7 +22,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.channels.InterruptedByTimeoutException;
 import java.text.DecimalFormat;
 
 
@@ -136,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                 response = new String(inputBuffer);
                 if (response.equals("PJACK")) {
                     bool3WayHandshake =  true;
-                    System.out.println("checkConnection: PJACK receveid!");
                     // Do NOT close the socket!
                 } else {
                     socket.close();

@@ -33,6 +33,9 @@ mipmap ic_launcher_foreground
 mipmap ic_launcher_round
 string app_name
 string connection_status
+string hdmi_1
+string hdmi_2
+string input
 string ip_address_port
 string power_off
 string power_on
