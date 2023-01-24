@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private int SERVER_PORT = 20554; // Port 20554 is a commonly used port for JVC beamers
     private String SERVER_IP = "";
     private String POWER_STATUS = ""; // Power status can be ON, OFF oder COOLING_DOWN
-    private static final int SERVER_TIMEOUT = 5000;
+    private static final int SERVER_TIMEOUT = 3000;
     private OutputStream beamerOutputStream;
     private InputStream beamerInputStream;
     private Button statusIcon;
@@ -125,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
             String response = new String(inputBuffer);
 
             if (response.equals("PJ_OK")) {
-                System.out.println("checkConnection: PJ_OK received");
                 //Send response PJREQ (in decimal 80 74 82 69 81)
                 beamerOutputStream = socket.getOutputStream();
                 beamerOutputStream.write(PJREQ);
@@ -142,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 // PJ_OK not received
-                System.out.println("checkConnection: ERROR! PJ_OK not received!");
                 socket.close();
                 bool3WayHandshake = false;
             }
@@ -166,12 +164,11 @@ public class MainActivity extends AppCompatActivity {
 
                 byte[] inputBuffer = new byte[6];
                 beamerInputStream.read(inputBuffer);
-                String reply = BinAscii.hexlify(inputBuffer);
 
                 inputBuffer = new byte[7];
                 beamerInputStream.read(inputBuffer);
 
-                reply = BinAscii.hexlify(inputBuffer);
+                String reply = BinAscii.hexlify(inputBuffer);
 
                 Button hdmi_1 = findViewById(R.id.hdmi_1);
                 Button hdmi_2 = findViewById(R.id.hdmi_2);
@@ -348,8 +345,6 @@ public class MainActivity extends AppCompatActivity {
                 beamerOutputStream.write(HDMI_1_ON);
                 byte[] inputBuffer = new byte[6];
                 beamerInputStream.read(inputBuffer);
-                String reply = BinAscii.hexlify(inputBuffer);
-                // correct reply: 06890149500A
                 checkHDMIInput();
                 socket.close();
             }
@@ -375,8 +370,6 @@ public class MainActivity extends AppCompatActivity {
                 beamerOutputStream.write(HDMI_2_ON);
                 byte[] inputBuffer = new byte[6];
                 beamerInputStream.read(inputBuffer);
-                String reply = BinAscii.hexlify(inputBuffer);
-                // correct reply: 06890149500A
                 checkHDMIInput();
                 socket.close();
             }
