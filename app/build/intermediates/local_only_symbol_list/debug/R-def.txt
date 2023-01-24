@@ -12,8 +12,6 @@ color teal_700
 color white
 drawable background
 drawable dotted_border
-drawable ic_launcher_background
-drawable ic_launcher_foreground
 drawable ic_settings
 drawable roundbutton
 id connectionStatus

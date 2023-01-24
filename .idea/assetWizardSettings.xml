@@ -114,6 +114,7 @@
                                               <map>
                                                 <entry key="color" value="000000" />
                                                 <entry key="imagePath" value="/mnt/hgfs/Desktop/projector-vector-icon.jpg" />
+                                                <entry key="scalingPercent" value="90" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -146,6 +147,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="legacyIconShape" value="CIRCLE" />
+                                      <entry key="previewDensity" value="XXXHIGH" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -328,6 +331,11 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                    </map>
+                                  </option>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="previewDensity" value="XXXHIGH" />
                                     </map>
                                   </option>
                                 </PersistentState>
