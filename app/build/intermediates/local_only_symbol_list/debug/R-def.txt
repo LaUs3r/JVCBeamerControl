@@ -18,6 +18,10 @@ id connectionStatus
 id connectionStatusIcon
 id hdmi_1
 id hdmi_2
+id pictureMode
+id pictureModeNatural
+id picture_mode_cinema
+id picture_mode_hdr
 id powerStatus
 id powerStatusIcon
 id power_off
@@ -35,6 +39,10 @@ string hdmi_1
 string hdmi_2
 string input
 string ip_address_port
+string pictureMode
+string pictureModeCinema
+string pictureModeHDR
+string pictureModeNatural
 string power_off
 string power_on
 string power_status

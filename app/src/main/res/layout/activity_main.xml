@@ -103,6 +103,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/power_on">
 
+        <TextView
+            android:id="@+id/pictureMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="40dp"
+            android:text="@string/pictureMode"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/hdmi_1" />
+
         <Button
             android:id="@+id/hdmi_2"
             android:layout_width="wrap_content"
@@ -135,6 +147,38 @@
             android:text="@string/hdmi_1"
             app:layout_constraintStart_toStartOf="@+id/selectInput"
             app:layout_constraintTop_toBottomOf="@+id/selectInput" />
+
+        <Button
+            android:id="@+id/pictureModeNatural"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:onClick="setPictureModeNatural"
+            android:text="@string/pictureModeNatural"
+            app:layout_constraintStart_toStartOf="@+id/selectInput"
+            app:layout_constraintTop_toBottomOf="@+id/pictureMode" />
+
+        <Button
+            android:id="@+id/picture_mode_cinema"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:onClick="setPictureModeCinema"
+            android:text="@string/pictureModeCinema"
+            app:layout_constraintStart_toEndOf="@+id/pictureModeNatural"
+            app:layout_constraintTop_toBottomOf="@+id/pictureMode" />
+
+        <Button
+            android:id="@+id/picture_mode_hdr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            android:onClick="setPictureModeHDR"
+            android:text="@string/pictureModeHDR"
+            app:layout_constraintStart_toEndOf="@+id/picture_mode_cinema"
+            app:layout_constraintTop_toBottomOf="@+id/pictureMode" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

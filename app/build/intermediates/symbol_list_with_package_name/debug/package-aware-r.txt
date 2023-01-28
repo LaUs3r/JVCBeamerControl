@@ -2978,6 +2978,10 @@ id path
 id pathRelative
 id peekHeight
 id percent
+id pictureMode
+id pictureModeNatural
+id picture_mode_cinema
+id picture_mode_hdr
 id pin
 id position
 id postLayout
@@ -3477,6 +3481,10 @@ string path_password_eye
 string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
+string pictureMode
+string pictureModeCinema
+string pictureModeHDR
+string pictureModeNatural
 string power_off
 string power_on
 string power_status
